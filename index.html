@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maalga Restaurant | Authentic Afghan & Desi Cuisine in Lahore</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        amberGold: '#D97706',
+                        brandDark: '#121212',
+                        brandCard: '#1E1E1E',
+                        brandAccent: '#B45309'
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js for 3D Interactive elements -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* Custom scrollbar & base styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121212;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D97706;
+            border-radius: 4px;
+        }
+        body {
+            background-color: #0A0A0A;
+            color: #F3F4F6;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(30, 30, 30, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(217, 119, 6, 0.2);
+        }
+        .hero-gradient {
+            background: radial-gradient(circle at center, rgba(217, 119, 6, 0.15) 0%, rgba(10, 10, 10, 0.95) 70%);
+        }
+        .card-hover-3d {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+        }
+        .card-hover-3d:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 30px -10px rgba(217, 119, 6, 0.3);
+        }
+        /* Floating animation for hero food badges */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(2deg); }
+        }
+        .animate-float {
+            animation: float 5s ease-in-out infinite;
+        }
+        .animate-float-delayed {
+            animation: float 6s ease-in-out 2.5s infinite;
+        }
+    </style>
+</head>
+<body class="bg-brandDark text-gray-100 antialiased selection:bg-amber-600 selection:text-white">
+
+    <!-- Navigation Bar -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo & Brand -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center shadow-lg shadow-amber-600/30 group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-utensils text-black text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-bold font-serif tracking-wide text-white">Maalga</span>
+                        <span class="block text-xs uppercase tracking-widest text-amber-500 font-semibold">Authentic Afghan & Desi</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Nav Links -->
+                <nav class="hidden md:flex items-center gap-8 font-medium">
+                    <a href="#hero" class="text-amber-400 hover:text-amber-300 transition-colors">Home</a>
+                    <a href="#about" class="text-gray-300 hover:text-amber-400 transition-colors">About</a>
+                    <a href="#menu" class="text-gray-300 hover:text-amber-400 transition-colors">Menu</a>
+                    <a href="#gallery" class="text-gray-300 hover:text-amber-400 transition-colors">Gallery</a>
+                    <a href="#reviews" class="text-gray-300 hover:text-amber-400 transition-colors">Reviews</a>
+                    <a href="#location" class="text-gray-300 hover:text-amber-400 transition-colors">Location</a>
+                </nav>
+
+                <!-- Actions & Cart Button -->
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleCart()" class="relative p-3 rounded-full glass-panel hover:bg-amber-600/20 text-amber-400 transition-all shadow-md group" aria-label="Shopping Cart">
+                        <i class="fa-solid fa-cart-shopping text-xl group-hover:scale-110 transition-transform"></i>
+                        <span id="cartBadge" class="absolute -top-1 -right-1 bg-amber-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
+                    </button>
+                    <a href="https://wa.me/923111550011?text=Hello%2C%20I%20would%20like%20to%20inquire%20about%20ordering%20from%20Maalga%20Restaurant." target="_blank" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-semibold shadow-lg shadow-emerald-600/20 transition-all transform hover:-translate-y-0.5">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span>WhatsApp Order</span>
+                    </a>
+                    <!-- Mobile Hamburger -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-lg glass-panel text-gray-300 hover:text-white" aria-label="Toggle Menu">
+                        <i class="fa-solid fa-bars text-xl" id="mobileMenuIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Drawer -->
+        <div id="mobileMenu" class="hidden md:hidden glass-panel border-t border-amber-600/20 px-6 py-6 space-y-4 bg-brandDark/95">
+            <a href="#hero" onclick="toggleMobileMenu()" class="block text-lg font-medium text-amber-400">Home</a>
+            <a href="#about" onclick="toggleMobileMenu()" class="block text-lg font-medium text-gray-300 hover:text-amber-400">About</a>
+            <a href="#menu" onclick="toggleMobileMenu()" class="block text-lg font-medium text-gray-300 hover:text-amber-400">Menu</a>
+            <a href="#gallery" onclick="toggleMobileMenu()" class="block text-lg font-medium text-gray-300 hover:text-amber-400">Gallery</a>
+            <a href="#reviews" onclick="toggleMobileMenu()" class="block text-lg font-medium text-gray-300 hover:text-amber-400">Reviews</a>
+            <a href="#location" onclick="toggleMobileMenu()" class="block text-lg font-medium text-gray-300 hover:text-amber-400">Location</a>
+            <div class="pt-4 border-t border-gray-800">
+                <a href="https://wa.me/923111550011?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order." target="_blank" class="w-full py-3 rounded-xl bg-emerald-600 text-white font-semibold flex items-center justify-center gap-2 shadow-lg">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> Chat on WhatsApp
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Cinematic 3D Hero Section -->
+    <section id="hero" class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden hero-gradient">
+        <!-- Background Glow Orbs -->
+        <div class="absolute top-1/4 left-10 w-72 h-72 bg-amber-600/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-10 right-10 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+            <!-- Hero Text Content -->
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel border border-amber-500/30 text-amber-400 text-sm font-semibold tracking-wide shadow-inner">
+                    <i class="fa-solid fa-star text-amber-400"></i> 4.8 Rating (Google Verified) • Johar Town, Lahore
+                </div>
+                <h1 class="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold tracking-tight text-white leading-tight">
+                    Experience Royal <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-amber-300">Afghan & Desi</span> Flavors
+                </h1>
+                <p class="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto lg:mx-0 font-light leading-relaxed">
+                    Savor the legendary taste of authentic Dumba Roast, tender Peshawari Mutton Karahi, and aromatic Kabuli Pulao prepared with heirloom recipes and pristine ingredients.
+                </p>
+                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
+                    <a href="#menu" class="px-8 py-4 rounded-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-bold text-lg shadow-xl shadow-amber-600/30 transition-all transform hover:-translate-y-1">
+                        <i class="fa-solid fa-book-open mr-2"></i> Explore Menu
+                    </a>
+                    <a href="https://wa.me/923111550011?text=Hello%2C%20I%20would%20like%20to%20order%20from%20Maalga%20Restaurant." target="_blank" class="px-8 py-4 rounded-full glass-panel hover:bg-white/10 text-white font-bold text-lg border border-amber-500/40 transition-all flex items-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-emerald-400 text-xl"></i> Order on WhatsApp
+                    </a>
+                </div>
+
+                <!-- Quick Highlights -->
+                <div class="grid grid-cols-3 gap-4 pt-8 border-t border-gray-800/80 max-w-lg mx-auto lg:mx-0">
+                    <div class="text-center lg:text-left">
+                        <span class="block text-2xl font-bold font-serif text-amber-400">100%</span>
+                        <span class="text-xs text-gray-400 uppercase tracking-wider">Halal & Fresh</span>
+                    </div>
+                    <div class="text-center lg:text-left">
+                        <span class="block text-2xl font-bold font-serif text-amber-400">Authentic</span>
+                        <span class="text-xs text-gray-400 uppercase tracking-wider">Peshawari Spices</span>
+                    </div>
+                    <div class="text-center lg:text-left">
+                        <span class="block text-2xl font-bold font-serif text-amber-400">Dumba</span>
+                        <span class="text-xs text-gray-400 uppercase tracking-wider">Specialty Roast</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero 3D / Layered Visual Experience -->
+            <div class="lg:col-span-5 relative flex justify-center">
+                <div class="relative w-full max-w-md aspect-square rounded-3xl glass-panel p-4 flex items-center justify-center card-hover-3d shadow-2xl overflow-hidden border border-amber-600/30">
+                    <!-- Main Hero Image -->
+                    <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80" alt="Maalga Special Dumba Roast" class="w-full h-full object-cover rounded-2xl shadow-lg transform hover:scale-105 transition-transform duration-700">
+                    
+                    <!-- Floating Badge 1 -->
+                    <div class="absolute -top-4 -left-4 glass-panel px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-float border border-amber-500/40">
+                        <div class="w-10 h-10 rounded-xl bg-amber-600/30 flex items-center justify-center text-amber-400 font-bold">
+                            <i class="fa-solid fa-fire text-lg"></i>
+                        </div>
+                        <div>
+                            <span class="block text-xs text-gray-400">Signature Dish</span>
+                            <span class="text-sm font-bold text-white">Full Dumba Roast</span>
+                        </div>
+                    </div>
+
+                    <!-- Floating Badge 2 -->
+                    <div class="absolute -bottom-4 -right-4 glass-panel px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-float-delayed border border-amber-500/40">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-600/30 flex items-center justify-center text-emerald-400 font-bold">
+                            <i class="fa-solid fa-award text-lg"></i>
+                        </div>
+                        <div>
+                            <span class="block text-xs text-gray-400">Google Rating</span>
+                            <span class="text-sm font-bold text-white">4.8 / 5.0 ⭐</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Restaurant Introduction & Stats -->
+    <section id="about" class="py-24 bg-gradient-to-b from-brandDark to-[#161616] relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <span class="text-amber-500 font-semibold uppercase tracking-widest text-sm">About Maalga Restaurant</span>
+                    <h2 class="text-3xl sm:text-5xl font-serif font-bold text-white leading-tight">
+                        A Culinary Journey Through the Mountains of Afghanistan & Valleys of Peshawar
+                    </h2>
+                    <p class="text-gray-300 leading-relaxed font-light">
+                        Located in the heart of Johar Town, Lahore at Khayaban-e-Firdousi, Maalga Restaurant brings time-honored tribal recipes straight to your table. From slow-cooked Dumba Roast seasoned with pure rock salt and spices, to fragrant Kabuli Pulao topped with caramelized carrots and raisins, every dish tells a story of heritage and passion.
+                    </p>
+                    <div class="grid grid-cols-2 gap-6 pt-4">
+                        <div class="glass-panel p-5 rounded-2xl border border-amber-600/20">
+                            <i class="fa-solid fa-utensils text-amber-500 text-2xl mb-2"></i>
+                            <h3 class="text-xl font-bold text-white">Authentic Recipes</h3>
+                            <p class="text-sm text-gray-400 mt-1">Traditional cooking techniques preserved for unmatched flavor.</p>
+                        </div>
+                        <div class="glass-panel p-5 rounded-2xl border border-amber-600/20">
+                            <i class="fa-solid fa-shield-heart text-amber-500 text-2xl mb-2"></i>
+                            <h3 class="text-xl font-bold text-white">Family Atmosphere</h3>
+                            <p class="text-sm text-gray-400 mt-1">Warm hospitality and spacious seating for family gatherings.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="Restaurant Interior" class="rounded-2xl object-cover h-64 w-full shadow-lg border border-amber-600/20">
+                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" alt="Delicious Food Spread" class="rounded-2xl object-cover h-64 w-full shadow-lg border border-amber-600/20 mt-8">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Menu Section -->
+    <section id="menu" class="py-24 bg-[#121212] relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto space-y-4 mb-12">
+                <span class="text-amber-500 font-semibold uppercase tracking-widest text-sm">Our Masterpieces</span>
+                <h2 class="text-4xl font-serif font-bold text-white">Explore Our Verified Menu</h2>
+                <p class="text-gray-400">Choose your favorite authentic dishes, add them to your cart, and order directly on WhatsApp with just one click.</p>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-10">
+                <!-- Category Tabs -->
+                <div id="categoryTabs" class="flex flex-wrap items-center justify-center md:justify-start gap-2 w-full md:w-auto">
+                    <button onclick="filterCategory('all')" class="category-btn px-5 py-2.5 rounded-full font-medium text-sm transition-all bg-amber-600 text-black shadow-md" data-category="all">All Items</button>
+                    <button onclick="filterCategory('Specialties')" class="category-btn px-5 py-2.5 rounded-full font-medium text-sm transition-all glass-panel text-gray-300 hover:text-white" data-category="Specialties">Specialties</button>
+                    <button onclick="filterCategory('BBQ & Karahi')" class="category-btn px-5 py-2.5 rounded-full font-medium text-sm transition-all glass-panel text-gray-300 hover:text-white" data-category="BBQ & Karahi">BBQ & Karahi</button>
+                    <button onclick="filterCategory('Rice & Platters')" class="category-btn px-5 py-2.5 rounded-full font-medium text-sm transition-all glass-panel text-gray-300 hover:text-white" data-category="Rice & Platters">Rice & Platters</button>
+                    <button onclick="filterCategory('Desserts & Beverages')" class="category-btn px-5 py-2.5 rounded-full font-medium text-sm transition-all glass-panel text-gray-300 hover:text-white" data-category="Desserts & Beverages">Desserts & Beverages</button>
+                </div>
+
+                <!-- Search Input -->
+                <div class="relative w-full md:w-72">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="menuSearch" oninput="searchMenu()" placeholder="Search dishes..." class="w-full pl-10 pr-4 py-2.5 rounded-full glass-panel border border-amber-600/30 text-white placeholder-gray-400 focus:outline-none focus:border-amber-500 text-sm">
+                </div>
+            </div>
+
+            <!-- Menu Items Grid -->
+            <div id="menuGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Populated dynamically via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Photo Gallery Section -->
+    <section id="gallery" class="py-24 bg-[#161616]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto space-y-4 mb-12">
+                <span class="text-amber-500 font-semibold uppercase tracking-widest text-sm">Visual Feast</span>
+                <h2 class="text-4xl font-serif font-bold text-white">Gallery of Delights</h2>
+                <p class="text-gray-400">A glimpse into our ambiance, live kitchen preparations, and signature platters.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="group relative rounded-2xl overflow-hidden glass-panel h-72 border border-amber-600/20">
+                    <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80" alt="Dumba Roast" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                        <span class="text-white font-semibold text-lg">Full Dumba Roast</span>
+                    </div>
+                </div>
+                <div class="group relative rounded-2xl overflow-hidden glass-panel h-72 border border-amber-600/20">
+                    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80" alt="Kabuli Pulao" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                        <span class="text-white font-semibold text-lg">Kabuli Pulao</span>
+                    </div>
+                </div>
+                <div class="group relative rounded-2xl overflow-hidden glass-panel h-72 border border-amber-600/20">
+                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="Mutton Karahi" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                        <span class="text-white font-semibold text-lg">Peshawari Mutton Karahi</span>
+                    </div>
+                </div>
+                <div class="group relative rounded-2xl overflow-hidden glass-panel h-72 border border-amber-600/20">
+                    <img src="https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=600&q=80" alt="BBQ Platters" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                        <span class="text-white font-semibold text-lg">Royal BBQ Platter</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Customer Reviews Section -->
+    <section id="reviews" class="py-24 bg-[#121212]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto space-y-4 mb-16">
+                <span class="text-amber-500 font-semibold uppercase tracking-widest text-sm">Testimonials</span>
+                <h2 class="text-4xl font-serif font-bold text-white">What Our Guests Say</h2>
+                <p class="text-gray-400">Verified reviews from Google Maps and our loyal patrons in Lahore.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Review 1 -->
+                <div class="glass-panel p-8 rounded-3xl border border-amber-600/20 relative">
+                    <div class="flex items-center gap-1 text-amber-500 mb-4">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-gray-300 italic mb-6">"The Dumba Roast at Maalga is hands down the best in Lahore! Tender, juicy, and packed with authentic Peshawari flavors. Highly recommended!"</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-amber-600/30 flex items-center justify-center font-bold text-amber-400 text-lg">U</div>
+                        <div>
+                            <h4 class="font-bold text-white">Usman Tariq</h4>
+                            <span class="text-xs text-gray-400">Google Local Guide</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Review 2 -->
+                <div class="glass-panel p-8 rounded-3xl border border-amber-600/20 relative">
+                    <div class="flex items-center gap-1 text-amber-500 mb-4">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-gray-300 italic mb-6">"Amazing ambiance in Johar Town. The Kabuli Pulao and Mutton Karahi reminded me of authentic dining in Kabul and Peshawar. Great service!"</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-amber-600/30 flex items-center justify-center font-bold text-amber-400 text-lg">A</div>
+                        <div>
+                            <h4 class="font-bold text-white">Ahmed Raza</h4>
+                            <span class="text-xs text-gray-400">Verified Customer</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Review 3 -->
+                <div class="glass-panel p-8 rounded-3xl border border-amber-600/20 relative">
+                    <div class="flex items-center gap-1 text-amber-500 mb-4">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-gray-300 italic mb-6">"Family-friendly environment and very courteous staff. Their WhatsApp ordering feature made taking away our dinner extremely seamless."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-amber-600/30 flex items-center justify-center font-bold text-amber-400 text-lg">F</div>
+                        <div>
+                            <h4 class="font-bold text-white">Dr. Farooq Awan</h4>
+                            <span class="text-xs text-gray-400">Verified Customer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Location & Opening Hours Section -->
+    <section id="location" class="py-24 bg-[#161616] relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <span class="text-amber-500 font-semibold uppercase tracking-widest text-sm">Find Us</span>
+                    <h2 class="text-4xl font-serif font-bold text-white">Visit Maalga Restaurant</h2>
+                    <p class="text-gray-300">Come over for an unforgettable dining experience or order for home delivery across Lahore.</p>
+                    
+                    <div class="space-y-4 pt-2">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-amber-600/20 text-amber-400 flex items-center justify-center shrink-0 mt-1">
+                                <i class="fa-solid fa-location-dot text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white">Address</h4>
+                                <p class="text-gray-400 text-sm">916-R1 Khayaban-e-Firdousi, Block R1, Phase 2 Johar Town, Lahore, Pakistan</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-amber-600/20 text-amber-400 flex items-center justify-center shrink-0 mt-1">
+                                <i class="fa-solid fa-clock text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white">Opening Hours</h4>
+                                <p class="text-gray-400 text-sm">Monday – Saturday: 12:00 PM – 12:00 AM<br><span class="text-amber-400">Sunday: Closed</span></p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-amber-600/20 text-amber-400 flex items-center justify-center shrink-0 mt-1">
+                                <i class="fa-solid fa-phone text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white">Phone / WhatsApp</h4>
+                                <p class="text-gray-400 text-sm">+92 311 1550011</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4">
+                        <a href="https://maps.app.goo.gl/x8Bvh6HqS4Ky23Lz6" target="_blank" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-amber-600 hover:bg-amber-500 text-black font-bold shadow-lg transition-transform hover:-translate-y-0.5">
+                            <i class="fa-solid fa-diamond-turn-right text-lg"></i> Get Directions on Google Maps
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Google Maps Embedded Embed View / Card -->
+                <div class="glass-panel p-4 rounded-3xl border border-amber-600/30 h-[400px] overflow-hidden shadow-2xl relative">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3403.351745269784!2d74.275816!3d31.472251!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3919036f0aa6742d%3A0xb35e070e3c50965e!2sKhayaban-e-Firdousi%2C%20Block%20R%201%20Phase%202%20Johar%20Town%2C%20Lahore%2C%20Pakistan!5e0!3m2!1sen!2s!4v1650000000000!5m2!1sen!2s" width="100%" height="100%" style="border:0; border-radius: 1.25rem;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shopping Cart Drawer -->
+    <div id="cartOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity" onclick="toggleCart()"></div>
+    <div id="cartDrawer" class="fixed top-0 right-0 bottom-0 w-full sm:w-[450px] bg-brandCard z-50 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col border-l border-amber-600/30">
+        <!-- Cart Header -->
+        <div class="p-6 border-b border-gray-800 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-cart-shopping text-amber-500 text-xl"></i>
+                <h3 class="text-xl font-bold font-serif text-white">Your Order Cart</h3>
+            </div>
+            <button onclick="toggleCart()" class="p-2 rounded-full hover:bg-gray-800 text-gray-400 hover:text-white transition-colors" aria-label="Close Cart">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Cart Items List -->
+        <div id="cartItemsList" class="flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- Populated dynamically -->
+        </div>
+
+        <!-- Cart Footer & Checkout Form -->
+        <div class="p-6 border-t border-gray-800 bg-[#141414] space-y-4">
+            <!-- Order Options -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-400">Order Type:</span>
+                    <div class="flex items-center gap-2">
+                        <label class="cursor-pointer flex items-center gap-1.5 text-xs text-white">
+                            <input type="radio" name="orderType" value="Delivery" checked class="text-amber-600 focus:ring-amber-500"> Delivery
+                        </label>
+                        <label class="cursor-pointer flex items-center gap-1.5 text-xs text-white">
+                            <input type="radio" name="orderType" value="Pickup" class="text-amber-600 focus:ring-amber-500"> Pickup
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <input type="text" id="customerName" placeholder="Your Name (Optional)" class="w-full px-4 py-2 rounded-xl glass-panel border border-amber-600/30 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <input type="text" id="customerAddress" placeholder="Delivery Address / Note (Optional)" class="w-full px-4 py-2 rounded-xl glass-panel border border-amber-600/30 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-amber-500">
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between text-lg font-bold pt-2 border-t border-gray-800">
+                <span class="text-gray-300">Subtotal:</span>
+                <span id="cartSubtotal" class="text-amber-400">Rs. 0</span>
+            </div>
+
+            <button onclick="checkoutWhatsApp()" class="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold flex items-center justify-center gap-2 shadow-xl shadow-emerald-600/30 transition-all transform hover:-translate-y-0.5">
+                <i class="fa-brands fa-whatsapp text-2xl"></i>
+                <span>Place Order on WhatsApp</span>
+            </button>
+            <p class="text-[11px] text-center text-gray-500">Orders are sent directly to Maalga Restaurant via WhatsApp.</p>
+        </div>
+    </div>
+
+    <!-- Floating WhatsApp Widget Button -->
+    <a href="https://wa.me/923111550011?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order%20from%20Maalga%20Restaurant." target="_blank" class="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-2xl hover:scale-110 transition-transform duration-300 group" aria-label="Chat on WhatsApp">
+        <i class="fa-brands fa-whatsapp text-3xl"></i>
+        <span class="absolute right-full mr-3 whitespace-nowrap bg-white text-black px-3 py-1.5 rounded-xl text-xs font-semibold shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Chat with us!</span>
+    </a>
+
+    <!-- Professional Footer -->
+    <footer class="bg-[#0D0D0D] border-t border-gray-800 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-amber-600 flex items-center justify-center text-black font-bold">
+                        <i class="fa-solid fa-utensils"></i>
+                    </div>
+                    <span class="text-xl font-serif font-bold text-white">Maalga Restaurant</span>
+                </div>
+                <p class="text-gray-400 text-sm leading-relaxed">Serving authentic Afghan & Desi cuisine with traditional spices and unmatched hospitality in Johar Town, Lahore.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Quick Links</h4>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li><a href="#hero" class="hover:text-amber-400 transition-colors">Home</a></li>
+                    <li><a href="#about" class="hover:text-amber-400 transition-colors">About Us</a></li>
+                    <li><a href="#menu" class="hover:text-amber-400 transition-colors">Menu & Ordering</a></li>
+                    <li><a href="#gallery" class="hover:text-amber-400 transition-colors">Gallery</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Cuisine & Specialties</h4>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li>Full Dumba Roast</li>
+                    <li>Peshawari Mutton Karahi</li>
+                    <li>Kabuli Pulao</li>
+                    <li>Dumpukht & Special BBQ</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Contact & Hours</h4>
+                <p class="text-sm text-gray-400 space-y-2">
+                    <span>916-R1 Khayaban-e-Firdousi, Block R1, Johar Town, Lahore</span><br>
+                    <span>Phone: +92 311 1550011</span><br>
+                    <span>Mon - Sat: 12:00 PM - 12:00 AM</span>
+                </p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 border-t border-gray-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500">
+            <p>&copy; 2026 Maalga Restaurant. All rights reserved.</p>
+            <p class="mt-2 sm:mt-0">Crafted with authentic taste & passion.</p>
+        </div>
+    </footer>
+
+    <!-- Application Logic -->
+    <script>
+        // Verified Menu Items Database
+        const menuItems = [
+            {
+                id: 1,
+                name: "Full Dumba Roast",
+                category: "Specialties",
+                price: 4000,
+                unit: "KG",
+                description: "Slow-roasted tender lamb seasoned with pure rock salt and traditional tribal spices.",
+                image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 2,
+                name: "Peshawari Mutton Karahi",
+                category: "BBQ & Karahi",
+                price: 4000,
+                unit: "Full",
+                description: "Authentic Peshawari style mutton cooked in pure tomatoes, green chilies, and fresh ginger.",
+                image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 3,
+                name: "Kabuli Pulao Beef",
+                category: "Rice & Platters",
+                price: 850,
+                unit: "Plate",
+                description: "Traditional Afghan rice topped with caramelized carrots, raisins, and tender beef chunks.",
+                image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 4,
+                name: "Chicken Rajistani Handi",
+                category: "BBQ & Karahi",
+                price: 1800,
+                unit: "Full",
+                description: "Rich, creamy, and flavorful chicken handi prepared with royal Rajistani spices.",
+                image: "https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 5,
+                name: "Special Kheer",
+                category: "Desserts & Beverages",
+                price: 350,
+                unit: "Bowl",
+                description: "Traditional slow-cooked creamy rice pudding garnished with pistachios and almonds.",
+                image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 6,
+                name: "Afghani Seekh Kabab",
+                category: "BBQ & Karahi",
+                price: 950,
+                unit: "Plate",
+                description: "Juicy minced meat skewers infused with mountain herbs and grilled over glowing charcoal.",
+                image: "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 7,
+                name: "Dumpukht Mutton",
+                category: "Specialties",
+                price: 4200,
+                unit: "KG",
+                description: "Steam-cooked tender mutton in sealed pot with potatoes, black pepper, and animal fat richness.",
+                image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 8,
+                name: "Special Do Pyaza",
+                category: "BBQ & Karahi",
+                price: 1900,
+                unit: "Full",
+                description: "Tender meat chunks cooked with double the portion of crispy onions and rich gravy.",
+                image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 9,
+                name: "Fresh Mint Lemonade",
+                category: "Desserts & Beverages",
+                price: 250,
+                unit: "Glass",
+                description: "Refreshing cooling drink crafted with fresh mint leaves, lemon juice, and crushed ice.",
+                image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80"
+            }
+        ];
+
+        let cart = [];
+        let currentFilter = 'all';
+
+        // Initialize Menu Rendering on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderMenu(menuItems);
+            updateCartUI();
+        });
+
+        // Render Menu Function
+        function renderMenu(items) {
+            const grid = document.getElementById('menuGrid');
+            if (items.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">No dishes found matching your search.</div>`;
+                return;
+            }
+
+            grid.innerHTML = items.map(item => `
+                <div class="glass-panel rounded-3xl overflow-hidden border border-amber-600/20 card-hover-3d flex flex-col justify-between">
+                    <div class="relative h-52 overflow-hidden">
+                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/1e1e1e/d97706?text=Maalga+Dish'">
+                        <span class="absolute top-4 right-4 bg-black/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-amber-400 border border-amber-500/30">${item.category}</span>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="flex items-start justify-between gap-2 mb-2">
+                                <h3 class="text-xl font-bold font-serif text-white">${item.name}</h3>
+                                <span class="text-amber-400 font-bold whitespace-nowrap">Rs. ${item.price.toLocaleString()} <span class="text-xs text-gray-400 font-normal">/ ${item.unit}</span></span>
+                            </div>
+                            <p class="text-gray-400 text-sm line-clamp-2">${item.description}</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-800/80 gap-3">
+                            <div class="flex items-center gap-2">
+                                <button onclick="addToCart(${item.id})" class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-black font-bold text-sm shadow-lg transition-transform active:scale-95 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-plus text-xs"></i> Add to Cart
+                                </button>
+                            </div>
+                            <button onclick="orderItemDirectWhatsApp('${item.name}', ${item.price})" class="p-2.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 transition-colors" title="Order on WhatsApp">
+                                <i class="fa-brands fa-whatsapp text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter Category
+        function filterCategory(category) {
+            currentFilter = category;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if (btn.dataset.category === category) {
+                    btn.className = 'category-btn px-5 py-2.5 rounded-full font-medium text-sm transition-all bg-amber-600 text-black shadow-md';
+                } else {
+                    btn.className = 'category-btn px-5 py-2.5 rounded-full font-medium text-sm transition-all glass-panel text-gray-300 hover:text-white';
+                }
+            });
+
+            const searchTerm = document.getElementById('menuSearch').value.toLowerCase();
+            applyFilters(searchTerm, category);
+        }
+
+        // Search Menu
+        function searchMenu() {
+            const searchTerm = document.getElementById('menuSearch').value.toLowerCase();
+            applyFilters(searchTerm, currentFilter);
+        }
+
+        function applyFilters(searchTerm, category) {
+            let filtered = menuItems;
+            if (category !== 'all') {
+                filtered = filtered.filter(item => item.category === category);
+            }
+            if (searchTerm.trim() !== '') {
+                filtered = filtered.filter(item => item.name.toLowerCase().includes(searchTerm) || item.description.toLowerCase().includes(searchTerm));
+            }
+            renderMenu(filtered);
+        }
+
+        // Cart Management
+        function toggleCart() {
+            const drawer = document.getElementById('cartDrawer');
+            const overlay = document.getElementById('cartOverlay');
+            if (drawer.classList.contains('translate-x-full')) {
+                drawer.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                drawer.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function addToCart(itemId) {
+            const item = menuItems.find(i => i.id === itemId);
+            const existing = cart.find(i => i.id === itemId);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...item, quantity: 1 });
+            }
+            updateCartUI();
+            toggleCart(); // Open cart drawer to show added item
+        }
+
+        function updateQuantity(itemId, delta) {
+            const item = cart.find(i => i.id === itemId);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.id !== itemId);
+                }
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const badge = document.getElementById('cartBadge');
+            const list = document.getElementById('cartItemsList');
+            const subtotalEl = document.getElementById('cartSubtotal');
+
+            const totalCount = cart.reduce((sum, i) => sum + i.quantity, 0);
+            badge.innerText = totalCount;
+
+            if (cart.length === 0) {
+                list.innerHTML = `<div class="text-center py-16 text-gray-500"><i class="fa-solid fa-basket-shopping text-4xl mb-3 text-gray-600"></i><p>Your cart is empty.</p></div>`;
+                subtotalEl.innerText = 'Rs. 0';
+                return;
+            }
+
+            let subtotal = 0;
+            list.innerHTML = cart.map(item => {
+                subtotal += item.price * item.quantity;
+                return `
+                    <div class="glass-panel p-4 rounded-2xl flex items-center justify-between border border-gray-800">
+                        <div class="flex-1 pr-3">
+                            <h4 class="font-bold text-white text-sm">${item.name}</h4>
+                            <span class="text-amber-400 text-xs font-semibold">Rs. ${item.price.toLocaleString()} x ${item.quantity}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateQuantity(${item.id}, -1)" class="w-7 h-7 rounded-lg bg-gray-800 text-gray-300 hover:text-white flex items-center justify-center text-xs">-</button>
+                            <span class="text-sm font-bold w-5 text-center">${item.quantity}</span>
+                            <button onclick="updateQuantity(${item.id}, 1)" class="w-7 h-7 rounded-lg bg-gray-800 text-gray-300 hover:text-white flex items-center justify-center text-xs">+</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            subtotalEl.innerText = `Rs. ${subtotal.toLocaleString()}`;
+        }
+
+        // WhatsApp Checkout Integration
+        function checkoutWhatsApp() {
+            if (cart.length === 0) {
+                alert('Your cart is empty. Please add items before placing an order.');
+                return;
+            }
+
+            const name = document.getElementById('customerName').value.trim();
+            const address = document.getElementById('customerAddress').value.trim();
+            const orderType = document.querySelector('input[name="orderType"]:checked').value;
+
+            let subtotal = 0;
+            let itemsSummary = cart.map(i => {
+                const itemTotal = i.price * i.quantity;
+                subtotal += itemTotal;
+                return `- ${i.name} x ${i.quantity} — Rs. ${itemTotal.toLocaleString()}`;
+            }).join('\n');
+
+            let message = `Hello! I would like to place an order from Maalga Restaurant.\n\n` +
+                          `Order Items:\n${itemsSummary}\n\n` +
+                          `Subtotal: Rs. ${subtotal.toLocaleString()}\n` +
+                          `Order Type: ${orderType}\n` +
+                          (name ? `Customer Name: ${name}\n` : '') +
+                          (address ? `Delivery Address / Notes: ${address}\n` : '') +
+                          `\nPlease confirm availability and the final total.`;
+
+            const phone = '923111550011';
+            const whatsappURL = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappURL, '_blank');
+        }
+
+        // Direct Item WhatsApp Order
+        function orderItemDirectWhatsApp(itemName, itemPrice) {
+            let message = `Hello! I would like to order 1 x ${itemName} (Rs. ${itemPrice.toLocaleString()}) from Maalga Restaurant. Please confirm availability.`;
+            const phone = '923111550011';
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const icon = document.getElementById('mobileMenuIcon');
+            menu.classList.toggle('hidden');
+            if (menu.classList.contains('hidden')) {
+                icon.className = 'fa-solid fa-bars text-xl';
+            } else {
+                icon.className = 'fa-solid fa-xmark text-xl';
+            }
+        }
+    </script>
+</body>
+</html>
